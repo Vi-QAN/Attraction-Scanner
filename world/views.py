@@ -1,5 +1,5 @@
 from django.contrib import messages
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import redirect
 
 import os
 from .models import FavouritePlace, WorldBorder
@@ -7,8 +7,6 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.shortcuts import render
 from django.urls import reverse
 from django.views import generic
-from django.contrib.auth.views import LoginView
-from django.utils import timezone
 import json
 import requests
 from django.http import JsonResponse
@@ -180,9 +178,13 @@ def add_favourite_place(request):
         # Process the JSON data
         response_data = {"message": "Data received and processed successfully."}
         user = User.objects.get(id=data['userid'])
-        FavouritePlace.objects.create(id=data['id'], userid=user, name=data['name'], distance=data['distance'],
-                                      xid=data['xid'], rate=data['rate'], lon=data['lon'], lat=data['lat'])
-        return JsonResponse(response_data)
+        try:
+            FavouritePlace.objects.get(id=data['id'])
+        except:
+            FavouritePlace.objects.create(id=data['id'], userid=user, name=data['name'], distance=data['distance'],
+                                          xid=data['xid'], rate=data['rate'], lon=data['lon'], lat=data['lat'])
+            return JsonResponse(response_data, status=200)
+        return JsonResponse({"error" : "Place is already added"}, status=409)
     else:
         return JsonResponse({"error": "Invalid request method."}, status=400)
 

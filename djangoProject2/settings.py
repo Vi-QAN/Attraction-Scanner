@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
-import os
+import os, socket
 from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -22,13 +22,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-h6=lz2%4m6@=7zggotuv1r@&gx141nj#&=r61(59#%uys)!9*z'
+SECRET_KEY = config('SECRET_KEY')
 os.environ['API_KEY'] = config('API_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
 
 
 # Application definition
@@ -128,7 +127,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
@@ -138,19 +137,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Login redirect URL
 LOGIN_REDIRECT_URL = "/"
 
-# if os.name == 'nt':
-#     import platform
-#     OSGEO4W = os.path.join(BASE_DIR, r".\OSGeo4W")
-#
-#     assert os.path.isdir(OSGEO4W), "Directory does not exist: " + OSGEO4W
-#     os.environ['OSGEO4W_ROOT'] = OSGEO4W
-#     os.environ['GDAL_DATA'] = OSGEO4W + r"\share\gdal"
-#     os.environ['PROJ_LIB'] = OSGEO4W + r"\share\proj"
-#     os.environ['PATH'] = OSGEO4W + r"\bin;" + os.environ['PATH']
-#
-# GDAL_LIBRARY_PATH = r'.\OSGeo4W\bin\gdal307.dll'
+# GDAL_LIBRARY_PATH = r'C:\OSGeo4W\bin\gdal307.dll'
 
-STATIC_ROOT = BASE_DIR / "static"
+STATIC_ROOT = os.path.join(BASE_DIR,"static")
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
@@ -166,3 +155,29 @@ LEAFLET_CONFIG = {
     'SCALE': None,
     'OPACITY': 0.5,
 }
+
+docker_config = {
+    "POSTGIS_PORT": 25432,
+    "PROJECT_NAME": "wmap",
+    "DEPLOY_SECURE": True
+}
+
+if socket.gethostname() =="DESKTOP-R1HO2A5":
+    DATABASES["default"]["HOST"] = "localhost"
+    DATABASES["default"]["PORT"] = docker_config['POSTGIS_PORT']
+else:
+    DATABASES["default"]["HOST"] =f"{docker_config['PROJECT_NAME']}_postgis"
+    DATABASES["default"]["PORT"] = 5432
+# Set DEPLOY_SECURE to True only for LIVE deployment
+if docker_config['DEPLOY_SECURE']:
+    DEBUG = False
+    TEMPLATES[0]["OPTIONS"]["debug"] = False
+    ALLOWED_HOSTS = ['wordpress.attractionscanner.link','localhost','127.0.0.1']
+    CSRF_COOKIE_SECURE = True
+    SESSION_COOKIE_SECURE = True
+else:
+    DEBUG = True
+    TEMPLATES[0]["OPTIONS"]["debug"] = True
+    ALLOWED_HOSTS = ['*', ]
+    CSRF_COOKIE_SECURE = False
+    SESSION_COOKIE_SECURE = False
