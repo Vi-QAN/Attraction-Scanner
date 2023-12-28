@@ -40,10 +40,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'world.apps.WorldConfig',
+    'rest_framework',
+    'rest_framework_gis',
     'django.contrib.gis',
     'crispy_forms',
     'leaflet',
     'widget_tweaks',
+    'pwa'
 ]
 
 MIDDLEWARE = [
@@ -61,7 +64,10 @@ ROOT_URLCONF = 'djangoProject2.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [BASE_DIR / 'templates']
+        'DIRS': [
+            BASE_DIR / 'world/templates'
+
+        ]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -137,9 +143,14 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Login redirect URL
 LOGIN_REDIRECT_URL = "/"
 
-# GDAL_LIBRARY_PATH = r'C:\OSGeo4W\bin\gdal307.dll'
+#GDAL_LIBRARY_PATH = r'C:\OSGeo4W\bin\gdal307.dll'
 
-STATIC_ROOT = os.path.join(BASE_DIR,"static")
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'frontend', 'static'),
+    os.path.join(BASE_DIR, 'world', 'static'),
+]
 
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
@@ -159,11 +170,11 @@ LEAFLET_CONFIG = {
 docker_config = {
     "POSTGIS_PORT": 25432,
     "PROJECT_NAME": "wmap",
-    "DEPLOY_SECURE": True
+    "DEPLOY_SECURE": False
 }
 
 if socket.gethostname() =="DESKTOP-R1HO2A5":
-    DATABASES["default"]["HOST"] = "localhost"
+    DATABASES["default"]["HOST"] = "host.docker.internal"
     DATABASES["default"]["PORT"] = docker_config['POSTGIS_PORT']
 else:
     DATABASES["default"]["HOST"] =f"{docker_config['PROJECT_NAME']}_postgis"
@@ -181,3 +192,50 @@ else:
     ALLOWED_HOSTS = ['*', ]
     CSRF_COOKIE_SECURE = False
     SESSION_COOKIE_SECURE = False
+
+
+PWA_APP_NAME = 'My App'
+PWA_APP_DESCRIPTION = "My app description"
+PWA_APP_THEME_COLOR = '#0A0302'
+PWA_APP_BACKGROUND_COLOR = '#ffffff'
+PWA_APP_DISPLAY = 'standalone'
+PWA_APP_SCOPE = '/'
+PWA_APP_ORIENTATION = 'any'
+PWA_APP_START_URL = '/'
+PWA_APP_STATUS_BAR_COLOR = 'default'
+PWA_APP_ICONS = [
+    {
+        'src': '/static/images/icons/icon-152x152.png',
+        'sizes': '152x152'
+    }
+]
+PWA_APP_ICONS_APPLE = [
+    {
+        'src': '/static/images/icons/icon-144x144.png',
+        'sizes': '144x144'
+    }
+]
+PWA_APP_SPLASH_SCREEN = [
+    {
+        'src': '/static/images/icons/splash-640x1136.png',
+        'media': '(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)'
+    }
+]
+PWA_APP_DIR = 'ltr'
+PWA_APP_LANG = 'en-US'
+PWA_APP_SHORTCUTS = [
+    {
+        'name': 'Shortcut',
+        'url': '/target',
+        'description': 'Shortcut to a page in my application'
+    }
+]
+PWA_APP_SCREENSHOTS = [
+    {
+      'src': '/static/images/icons/splash-750x1334.png',
+      'sizes': '750x1334',
+      "type": "image/png"
+    }
+]
+
+PWA_APP_DEBUG_MODE = True

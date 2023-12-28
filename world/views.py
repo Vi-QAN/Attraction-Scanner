@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.shortcuts import redirect
-
+from django.http import HttpResponse
 import os
 from .models import FavouritePlace, WorldBorder
 from django.contrib.gis.geos import GEOSGeometry
@@ -28,17 +28,16 @@ class HomeView (generic.View):
     template_name = 'world/map.html'
 
     @method_decorator(login_required(redirect_field_name='next', login_url='/accounts/login'))
-    def get(self, request, *args, **kwargs):
-        context = {}
-        userid = request.GET.get('userid')
-        context['favourite_list'] = FavouritePlace.objects.filter(userid=userid)
-        context['countries'] = WorldBorder.objects.only('id','name').order_by('name')
-        context['userid'] = userid
+    def get(self, request, userid):
+        context = {
+            'countries': WorldBorder.objects.only('id', 'name').order_by('name'),
+            'userid': userid
+        }
 
         return render(request, self.template_name, context)
 
 class LoginView (generic.View):
-    template_name = 'world/login.html'
+    template_name = 'registration/login.html'
 
     def post(self, request):
         if request.method == 'POST':
@@ -50,7 +49,7 @@ class LoginView (generic.View):
 
                 if user is not None:
                     login(request, user)
-                    return redirect(reverse('world:home') + '?userid=' + str(user.id))  # Replace 'home' with your desired redirect URL after successful login
+                    return redirect(reverse('world:home', kwargs={'userid': user.id}))
                 else:
                     messages.error(request, 'Invalid username or password')
             else:
@@ -58,6 +57,7 @@ class LoginView (generic.View):
         else:
             form = AuthenticationForm()
 
+    @method_decorator(login_required(redirect_field_name='next', login_url='/accounts/login'))
     def get(self, request):
         return render(request, self.template_name)
 
@@ -141,22 +141,10 @@ def on_logout(request):
 
 
 @login_required(redirect_field_name='next', login_url='/accounts/login')
-def handle_favourite_place(request, placeid):
+def favourite_place(request, userid, placeid):
     try:
-        userid = request.GET.get('userid')
         place = FavouritePlace.objects.get(id=placeid, userid=userid)
-        data = json.dumps({
-            "id": place.id,
-            "name": place.name,
-            "distance": place.distance,
-            "xid": place.xid,
-
-            "lon": place.lon,
-            "lat": place.lat,
-
-            # "wikidata": item['properties']['wikidata'],
-            "rate": place.rate
-        })
+        data = convert_to_json(place)
 
     except FavouritePlace.DoesNotExist:
         return JsonResponse({"error": "Place not found"}, status=404)
@@ -171,13 +159,15 @@ def handle_favourite_place(request, placeid):
         place.delete()
         response_data = {'message': 'Place deleted successfully.'}
         return JsonResponse(response_data)
+
+
 @login_required(redirect_field_name='next', login_url='/accounts/login')
-def add_favourite_place(request):
+def favourite_list(request, userid):
     if request.method == "POST":
         data = json.loads(request.body)
         # Process the JSON data
         response_data = {"message": "Data received and processed successfully."}
-        user = User.objects.get(id=data['userid'])
+        user = User.objects.get(id=userid)
         try:
             FavouritePlace.objects.get(id=data['id'])
         except:
@@ -185,8 +175,63 @@ def add_favourite_place(request):
                                           xid=data['xid'], rate=data['rate'], lon=data['lon'], lat=data['lat'])
             return JsonResponse(response_data, status=200)
         return JsonResponse({"error" : "Place is already added"}, status=409)
+    elif request.method == "GET":
+        try:
+            data = []
+            places = FavouritePlace.objects.filter(userid=userid)
+            for place in places:
+                data.append(convert_to_json(place))
+            return JsonResponse({"data": data}, status=200)
+        except:
+            return JsonResponse({"error": "Fail to get"}, status=404)
+    elif request.method == "DELETE":
+        try:
+            placeid = request.GET.get('placeid')
+            place = FavouritePlace.objects.get(id=placeid, userid=userid)
+
+            # Delete the object
+            place.delete()
+            response_data = {'message': 'Place deleted successfully.'}
+            return JsonResponse(response_data)
+        except FavouritePlace.DoesNotExist:
+            return JsonResponse({"error": "Place not found"}, status=404)
+            pass
     else:
         return JsonResponse({"error": "Invalid request method."}, status=400)
+
+
+def service_worker(request):
+    response = HttpResponse(
+        open('static/frontend/serviceworker.js').read(), content_type="application/javascript"
+    )
+    return response
+
+
+def convert_to_json(place):
+    return {
+            "id": place.id,
+            "name": place.name,
+            "distance": place.distance,
+            "xid": place.xid,
+
+            "lon": place.lon,
+            "lat": place.lat,
+
+            # "wikidata": item['properties']['wikidata'],
+            "rate": place.rate
+        }
+# def manifest(request):
+#     return render(
+#         request,
+#         "manifest.json",
+#         {
+#             setting_name: getattr(app_settings, setting_name)
+#             for setting_name in dir(app_settings)
+#             if setting_name.startswith("PWA_")
+#         },
+#         content_type="application/json",
+#     )
+
 
 
 

@@ -5,7 +5,7 @@ User = get_user_model()
 
 class WorldBorder(models.Model):
     # Regular Django fields corresponding to the attributes in the
-    # world borders shapefile.
+    # images borders shapefile.
     name = models.CharField(max_length=50)
     area = models.IntegerField()
     pop2005 = models.IntegerField('Population 2005')
