@@ -103,132 +103,15 @@ self.addEventListener('fetch', event => {
 
   event.respondWith(bgSyncLogic());
 });
-// registerRoute(
-//     // check for post, same origin, path
-//     // add to background sync queue first
-//     //
-// )
 
-// Register the new route
-// var staticCacheName = "django-pwa-v" + 1;
-// var filesToCache = [
-//     '/',
-//     '/manifest.json'
-// ];
-//
-// var requests = [];
-//
-// Cache on install
-// self.addEventListener("install", event => {
-//     console.log("installing")
-//     event.waitUntil(
-//         caches.open(staticCacheName)
-//             .then(cache => {
-//                 return cache.addAll(filesToCache);
-//             })
-//             .catch(err => console.error('install', err))
-//     )
-// });
-//
-// Clear cache on activate
-// self.addEventListener('activate', event => {
-//     event.waitUntil(
-//         caches.keys().then(cacheNames => {
-//             return Promise.all(
-//                 cacheNames
-//                     .filter(cacheName => (cacheName.startsWith("django-pwa-")))
-//                     .filter(cacheName => (cacheName !== staticCacheName))
-//                     .map(cacheName => caches.delete(cacheName))
-//             );
-//         })
-//     )
-// });
-//
-// // Serve from Cache
-// self.addEventListener("fetch", event => {
-//     if (event.request.method === "GET") {
-//         if (event.request.destination === "image"){
-//             return;
-//         }
-//         else {
-//             // Open the cache
-//             event.respondWith(caches.open(staticCacheName).then((cache) => {
-//                 // Go to the network first
-//                 return fetch(event.request.url).then((fetchedResponse) => {
-//                     cache.put(event.request, fetchedResponse.clone());
-//
-//                     return fetchedResponse;
-//                 }).catch(() => {
-//                     // If the network is unavailable, get
-//                     return cache.match(event.request.url);
-//                 });
-//             }));
-//         }
-//
-//     }
-//     else {
-//         requests.push(event.request);
-//
-//         event.respondWith(caches.open(staticCacheName).then((cache) => {
-//             return fetch(event.request.url).catch(() => {
-//                 cache.match('/user?')
-//             })
-//         }))
-//         console.log(requests)
-//     }
-// });
-//
-// self.addEventListener('sync', (event) => {
-//   if (event.tag === 'sync-deletes') {
-//     event.waitUntil(syncDeletes());
-//   }
-//
-//   if (event.tag === 'sync-posts'){
-//       event.waitUntil(syncPosts());
-//   }
-// });
-//
-// function syncPosts(){
-//     const postRequests = requests.filter(r => r.method === 'POST')
-//
-//     return Promise.all(postRequests.map(r => {
-//         return new Promise(((resolve,reject) => {
-//             fetch(r).then((response) => {
-//             if (response.ok) {
-//                 // Deletion was successful
-//                 resolve();
-//             } else {
-//                 // Handle error, e.g., by rejecting the promise
-//                 reject(new Error(`Post failed for ${r.url}`));
-//             }
-//             })
-//             .catch((error) => {
-//                 // Handle network or other errors
-//                 reject(error);
-//             });
-//         }));
-//     }))
-// }
-//
-// function syncDeletes(){
-//     const delRequests = requests.filter(r => r.method === 'DELETE')
-//
-//     return Promise.all(delRequests.map(r => {
-//         return new Promise(((resolve,reject) => {
-//             fetch(r).then((response) => {
-//             if (response.ok) {
-//                 // Deletion was successful
-//                 resolve();
-//             } else {
-//                 // Handle error, e.g., by rejecting the promise
-//                 reject(new Error(`Deletion failed for ${r.url}`));
-//             }
-//             })
-//             .catch((error) => {
-//                 // Handle network or other errors
-//                 reject(error);
-//             });
-//         }));
-//     }))
-// }
+// Listen for push events
+self.addEventListener('push', (event) => {
+  const options = {
+    body: event.data.text(),
+  };
+
+  event.waitUntil(
+    self.registration.showNotification('Attraction Scanner', options)
+  );
+});
 

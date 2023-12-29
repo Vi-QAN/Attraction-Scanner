@@ -15,6 +15,8 @@ urlpatterns = [
     path('user/<int:userid>/favouriteList', views.favourite_list, name="favourite_list"),
     path('user/<int:userid>/favouriteList/<int:placeid>', views.favourite_place, name="favourite_place"),
     re_path(r"^serviceworker\.js$", service_worker, name="serviceworker"),
+    path('subscribe/',views.subscribe_user, name='subscribe_user'),
+
     # re_path(r"^manifest\.json$", manifest, name="manifest"),
 ]
 

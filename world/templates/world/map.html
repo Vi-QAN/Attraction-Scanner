@@ -109,8 +109,7 @@
 
 
     </div>
-    {{ favourite_list }}
-    <script type="text/javascript" src="{% static 'frontend/main-f7d9608d5d1f6b933b05.js' %}"></script>
+    <script type="text/javascript" src="{% static 'frontend/main-b1881cf4b02dfb87a15a.js' %}"></script>
     <script>
 
         const csrfToken = document.querySelector("[name=csrfmiddlewaretoken]").value;
@@ -187,7 +186,8 @@
                         .openOn(map);
                 });
 
-                onGetAttractions(slider.value)
+                {#onGetAttractions(slider.value)#}
+
             });
         }
 
@@ -235,7 +235,7 @@
         
         window.onSubmission = function(){
             const countryId = document.getElementById("dropdown").value;
-            console.log(countryId)
+
             if (countryId !== "default"){
                 const url = `{% url 'world:get_country_polygon' %}?countryId=${countryId}`;
         
@@ -299,6 +299,7 @@
                         }
 
                         localStorage.setItem('nearby_attractions', JSON.stringify(data));
+                        sendSubscriptionToServer(localStorage.getItem('subscription'), `${data.length} attractions found`)
                         const div = document.getElementById("nearby_attractions_list")
                         data.forEach(function(item, index){
                             const point = {"lat": item.lat, "lng": item.lon}

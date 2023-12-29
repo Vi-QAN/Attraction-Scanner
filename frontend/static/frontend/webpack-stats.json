@@ -1,13 +1,13 @@
 {
   "status": "done",
   "assets": {
-    "main-f7d9608d5d1f6b933b05.js": {
-      "name": "main-f7d9608d5d1f6b933b05.js",
-      "path": "C:\\Users\\35383\\Documents\\Python Script\\djangoProject2\\frontend\\static\\frontend\\main-f7d9608d5d1f6b933b05.js"
+    "main-b1881cf4b02dfb87a15a.js": {
+      "name": "main-b1881cf4b02dfb87a15a.js",
+      "path": "C:\\Users\\35383\\Documents\\Python Script\\djangoProject2\\frontend\\static\\frontend\\main-b1881cf4b02dfb87a15a.js"
     },
-    "main-f7d9608d5d1f6b933b05.js.LICENSE.txt": {
-      "name": "main-f7d9608d5d1f6b933b05.js.LICENSE.txt",
-      "path": "C:\\Users\\35383\\Documents\\Python Script\\djangoProject2\\frontend\\static\\frontend\\main-f7d9608d5d1f6b933b05.js.LICENSE.txt"
+    "main-b1881cf4b02dfb87a15a.js.LICENSE.txt": {
+      "name": "main-b1881cf4b02dfb87a15a.js.LICENSE.txt",
+      "path": "C:\\Users\\35383\\Documents\\Python Script\\djangoProject2\\frontend\\static\\frontend\\main-b1881cf4b02dfb87a15a.js.LICENSE.txt"
     },
     "serviceworker.js": {
       "name": "serviceworker.js",
@@ -16,7 +16,7 @@
   },
   "chunks": {
     "main": [
-      "main-f7d9608d5d1f6b933b05.js"
+      "main-b1881cf4b02dfb87a15a.js"
     ]
   }
 }
