@@ -14,7 +14,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import authenticate, login, get_user_model, logout
 from django.utils.decorators import method_decorator
 from django.contrib.auth.forms import AuthenticationForm
-
+from django.views.decorators.csrf import csrf_exempt
+from pywebpush import webpush
 
 User = get_user_model()
 # user = User.objects.create(username='john_doe', password='password123')
@@ -206,7 +207,6 @@ def service_worker(request):
     )
     return response
 
-
 def convert_to_json(place):
     return {
             "id": place.id,
@@ -220,6 +220,28 @@ def convert_to_json(place):
             # "wikidata": item['properties']['wikidata'],
             "rate": place.rate
         }
+
+
+@csrf_exempt
+def subscribe_user(request):
+    if request.method == 'POST':
+        data = json.loads(request.body.decode('utf-8'))
+        # Save the subscription data to the database if needed
+        subscription_info = json.loads(data.get('subscription'))
+        text = data.get('text')
+        # Send a welcome push notification
+        webpush(
+            subscription_info,
+            text,
+            "ZhQN5Cdl61cLJGsJkxfJc_5wnzx-Fnwy0806eYEJG30",
+            {
+                "sub": "mailto:supertrikas123@gmail.com",
+            }
+        )
+
+        return JsonResponse({'status': 'success', 'message': 'Subscription successful'})
+
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'})
 # def manifest(request):
 #     return render(
 #         request,

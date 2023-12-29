@@ -21,7 +21,8 @@ RUN apt-get -y install build-essential python3-cffi libcairo2 libpango-1.0-0 lib
 # Now copy this to the image and install everything in it.
 #Make sure to install uwsgi - it may not be in the source
 # environment.
-COPY ENV.yml /usr/src/app
+# Copy everything in your Django project to the image.
+COPY . /usr/src/app
 RUN conda env create -n djangoProject2 --file ENV.yml
 # Make RUN commands use the new environment
 # See https://pythonspeed.com/articles/activate-conda-dockerfile/ for explanation
@@ -31,8 +32,8 @@ SHELL ["/bin/bash", "--login", "-c"]
 RUN conda config --add channels conda-forge && conda config --set channel_priority strict
 RUN cat ~/.condarc
 RUN conda install uwsgi
-# Copy everything in your Django project to the image.
-COPY . /usr/src/app
+# Install packages using pip
+RUN pip install -r requirements.txt
 # Make sure that static files are up to date and available
 RUN python manage.py collectstatic --no-input
 # Expose port 8001 on the image. We'll map a localhost port to this later.

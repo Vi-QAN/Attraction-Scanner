@@ -46,8 +46,15 @@ INSTALLED_APPS = [
     'crispy_forms',
     'leaflet',
     'widget_tweaks',
-    'pwa'
+    'pwa',
+    'pywebpush'
 ]
+
+WEBPUSH_SETTINGS = {
+    "VAPID_PUBLIC_KEY": "BKAuhRXkQ97JADPegfqNFIpzVJq9ntXI3Hlbg4-5bMun0Derslx1MFx_M-wRll9wTYsrZ_MIOeTklqm2XDaLjxg",  # Generate your VAPID keys
+    "VAPID_PRIVATE_KEY": "ZhQN5Cdl61cLJGsJkxfJc_5wnzx-Fnwy0806eYEJG30",
+    "VAPID_ADMIN_EMAIL": "supertrikas123@gmail.com",
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
