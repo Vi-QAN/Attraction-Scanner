@@ -1,0 +1,22 @@
+{
+  "status": "done",
+  "assets": {
+    "main-b1881cf4b02dfb87a15a.js": {
+      "name": "main-b1881cf4b02dfb87a15a.js",
+      "path": "C:\\Users\\35383\\Documents\\Python Script\\djangoProject2\\frontend\\static\\frontend\\main-b1881cf4b02dfb87a15a.js"
+    },
+    "main-b1881cf4b02dfb87a15a.js.LICENSE.txt": {
+      "name": "main-b1881cf4b02dfb87a15a.js.LICENSE.txt",
+      "path": "C:\\Users\\35383\\Documents\\Python Script\\djangoProject2\\frontend\\static\\frontend\\main-b1881cf4b02dfb87a15a.js.LICENSE.txt"
+    },
+    "serviceworker.js": {
+      "name": "serviceworker.js",
+      "path": "C:\\Users\\35383\\Documents\\Python Script\\djangoProject2\\frontend\\static\\frontend\\serviceworker.js"
+    }
+  },
+  "chunks": {
+    "main": [
+      "main-b1881cf4b02dfb87a15a.js"
+    ]
+  }
+}
